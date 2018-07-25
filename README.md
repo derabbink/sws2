@@ -8,7 +8,7 @@ This project utilizes a unidirectional `org.glassfish.hk2:guice-bridge` to make 
 
 ### Relying on Guice Modules Only
 Often, you'll find that your Jersey types (like resources or providers) are defined nowhere near where your code/config for letting Jersey know about them lives.
-In this project, all Endpoints live in the `sws-web-api` module, while the Jersey configuration lives in the `sws2-webapp` module.
+In this project, all endpoints live in the `sws-web-api` module, while the Jersey configuration lives in the `sws2-webapp` module.
 Normally this would require developers to keep the set of available Jersey types in sync with this Jerset configuration, but in this example project this is done with the help of Guice's Module trees.
 If the majority of all classes is going to be managed by Guice, the Jersey types might as well be managed in the same way.
 
@@ -29,5 +29,12 @@ These `Class` instances are then registered with Jersey (and its HK2 DI containe
 
 In order to register a Jersey type with Guice to be passed along to Jersey, implementors should make use of the `JerseyTypesModule`, which wraps a Guice multibinder to bind all these types under the same `Key`.
 Ultimately this leads to a `Set<Class<?>>` for all explicitly Gucie-bound types that is being passed to `JerseyApplication`.
+
+## How to Run
+```sh
+mvn install
+cd sws2-webapp; mvn jetty:run
+```
+The `GreetingEndpoint` will be available at `http://localhost:8080/greeting`
 
 [sws1]: https://github.com/teamlazerbeez/simple-web-stack
