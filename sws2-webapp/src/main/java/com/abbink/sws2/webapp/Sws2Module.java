@@ -15,6 +15,8 @@ public class Sws2Module extends AbstractModule { //ServletModule {
 
     @Override
     protected void configure() {
+        bind(ServletContext.class).toInstance(servletContext);
+
         // install sws2 application dependencies
         install(new ApiModule());
 

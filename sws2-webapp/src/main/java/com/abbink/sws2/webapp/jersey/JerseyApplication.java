@@ -1,9 +1,11 @@
 package com.abbink.sws2.webapp.jersey;
 
-import com.abbink.sws2.common.di.JerseyTypesModule;
+import com.abbink.sws2.common.di.JerseyModule;
+import com.abbink.sws2.common.jersey.JerseyObjects;
 import com.abbink.sws2.common.jersey.JerseyTypes;
 import com.abbink.sws2.webapp.Sws2ServletContextListener;
 import com.google.inject.Binding;
+import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
@@ -20,7 +22,7 @@ import static com.google.inject.spi.Elements.getElements;
 /**
  * This sets up the Guice-to-HK2 bridge (unidirectional only).
  * This also dynamically registers all {@link JerseyTypes}-annotated resources & providers that are bound through
- * {@link JerseyTypesModule}s.
+ * {@link JerseyModule}s.
  *
  * NOTE: This can only be instantiated after the {@link Sws2ServletContextListener} was initialized.
  */
@@ -33,6 +35,7 @@ public class JerseyApplication extends ResourceConfig {
     public JerseyApplication(ServiceLocator hk2ServiceLocator) {
         super();
         Injector guiceInjector = createUnidirectionalGuiceBridge(hk2ServiceLocator);
+        registerJerseyObjectsFromGuice(guiceInjector);
         registerJerseyClassesFromGuice(guiceInjector);
     }
 
@@ -47,11 +50,28 @@ public class JerseyApplication extends ResourceConfig {
         return guiceInjector;
     }
 
+    private void registerJerseyObjectsFromGuice(Injector guiceInjector) {
+        try {
+            Set<Class<?>> jerseyObjectClasses = guiceInjector.getInstance(
+                Key.get(new TypeLiteral<Set<Class<?>>>() {}, JerseyObjects.class)
+            );
+            for (Class jerseyObjectClass : jerseyObjectClasses) {
+                Object jerseyObject = guiceInjector.getInstance(jerseyObjectClass);
+                register(jerseyObject);
+            }
+        } catch (ConfigurationException e) {
+            // Don't do anything. This can happen if no jersey objects were bound
+        }
+    }
+
     private void registerJerseyClassesFromGuice(Injector guiceInjector) {
-        Binding<Set<Class<?>>> binding = guiceInjector.getBinding(
-            Key.get(new TypeLiteral<Set<Class<?>>>(){}, JerseyTypes.class)
-        );
-        Set<Class<?>> jerseyClasses = binding.getProvider().get();
-        registerClasses(jerseyClasses);
+        try {
+            Set<Class<?>> jerseyClasses = guiceInjector.getInstance(
+                Key.get(new TypeLiteral<Set<Class<?>>>(){}, JerseyTypes.class)
+            );
+            registerClasses(jerseyClasses);
+        } catch (ConfigurationException e) {
+            // Don't do anything. This can happen if no jersey types were bound
+        }
     }
 }
