@@ -20,6 +20,10 @@
         </dependency>
         <dependency>
             <groupId>com.abbink.sws2</groupId>
+            <artifactId>sws2-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.abbink.sws2</groupId>
             <artifactId>sws2-web-api</artifactId>
         </dependency>
 
