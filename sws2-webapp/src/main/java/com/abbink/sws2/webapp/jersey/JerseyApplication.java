@@ -21,8 +21,8 @@ import static com.google.inject.spi.Elements.getElements;
 
 /**
  * This sets up the Guice-to-HK2 bridge (unidirectional only).
- * This also dynamically registers all {@link JerseyTypes}-annotated resources & providers that are bound through
- * {@link JerseyModule}s.
+ * This also dynamically registers all {@link JerseyTypes}/{@link JerseyObjects}-annotated resources & providers that
+ * are bound through {@link JerseyModule}s.
  *
  * NOTE: This can only be instantiated after the {@link Sws2ServletContextListener} was initialized.
  */

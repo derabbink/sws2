@@ -16,6 +16,9 @@ public class Sws2ServletContextListener extends GuiceServletContextListener {
 
     public static Injector getInjectorInstance() {
         synchronized (INJECTOR_LOCK) {
+            if (INJECTOR == null) {
+                throw new IllegalStateException("The injector has not yet been initialized");
+            }
             return INJECTOR;
         }
     }

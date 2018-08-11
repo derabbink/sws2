@@ -6,7 +6,7 @@ import com.google.inject.AbstractModule;
 
 import javax.servlet.ServletContext;
 
-public class Sws2Module extends AbstractModule { //ServletModule {
+public class Sws2Module extends AbstractModule {
     private ServletContext servletContext;
 
     public Sws2Module(ServletContext servletContext) {
