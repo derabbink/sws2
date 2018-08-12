@@ -1,4 +1,2 @@
-CREATE TABLE `greeting` (
-  `id` BIGINT NOT NULL auto_increment PRIMARY KEY,
-  `greeting` VARCHAR(255) NOT NULL,
-);
+-- This file is deliberately empty
+-- it merely serves as an illustration of where migration SQL files could be placed

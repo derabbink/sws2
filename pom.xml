@@ -29,6 +29,7 @@
         <hk2.version>2.5.0-b61</hk2.version>
         <h2db.version>1.4.197</h2db.version>
         <jackson.version>2.9.6</jackson.version>
+        <javax-persistence.version>2.2</javax-persistence.version>
         <jersey.version>2.27</jersey.version>
         <jooq.version>3.11.4</jooq.version>
         <junit.version>4.12</junit.version>
@@ -39,6 +40,7 @@
         <flyway-maven-plugin.version>${flyway.version}</flyway-maven-plugin.version>
         <jetty-maven-plugin.version>9.4.11.v20180605</jetty-maven-plugin.version>
         <jooq-maven-plugin.version>${jooq.version}</jooq-maven-plugin.version>
+        <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -113,6 +115,12 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2db.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <version>${javax-persistence.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
@@ -202,6 +210,16 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>${jetty-maven-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
