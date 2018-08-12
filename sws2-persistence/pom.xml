@@ -18,16 +18,20 @@
         <codegen.db.schema>PUBLIC</codegen.db.schema>
         <codegen.flyway.migrations>classpath:com.abbink.sws2.persistence.schema</codegen.flyway.migrations>
         <codegen.jdbc.driver>org.h2.Driver</codegen.jdbc.driver>
-        <codegen.jdbc.url>jdbc:h2:${build.outputDirectory}/tmp/codegen.h2.db</codegen.jdbc.url>
-        <codegen.jooq.generator>org.jooq.meta.h2.H2Database</codegen.jooq.generator>
+        <codegen.jdbc.url>jdbc:h2:${project.build.outputDirectory}/tmp/codegen.h2.db</codegen.jdbc.url>
+        <codegen.jooq.database>org.jooq.meta.h2.H2Database</codegen.jooq.database>
         <codegen.jooq.output.package>com.abbink.sws2.persistence.generated.jooq</codegen.jooq.output.package>
-        <codegen.jooq.output.path>${project.basedir}/src/main/java/com/abbink/sws2/persistence/generated/jooq</codegen.jooq.output.path>
+        <codegen.jooq.output.path>${basedir}/src/main/java/com/abbink/sws2/persistence/generated/jooq</codegen.jooq.output.path>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.abbink.sws2</groupId>
             <artifactId>sws2-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.abbink.sws2</groupId>
+            <artifactId>sws2-persistence-schema</artifactId>
         </dependency>
 
         <dependency>
@@ -90,6 +94,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.abbink.sws2</groupId>
+                        <artifactId>sws2-persistence-schema</artifactId>
+                        <version>${sws2.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.jooq</groupId>
@@ -109,9 +120,8 @@
                                 <url>${codegen.jdbc.url}</url>
                             </jdbc>
                             <generator>
-                                <name>org.jooq.util.DefaultGenerator</name>
                                 <database>
-                                    <name>${codegen.jooq.generator}</name>
+                                    <name>${codegen.jooq.database}</name>
                                     <inputSchema>${codegen.db.schema}</inputSchema>
                                 </database>
                                 <target>

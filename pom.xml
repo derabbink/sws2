@@ -12,6 +12,7 @@
     <modules>
         <module>sws2-common</module>
         <module>sws2-persistence</module>
+        <module>sws2-persistence-schema</module>
         <module>sws2-webapp</module>
         <module>sws2-web-api</module>
     </modules>
@@ -35,7 +36,9 @@
         <servlet.version>4.0.1</servlet.version>
 
         <!-- plugins -->
+        <flyway-maven-plugin.version>${flyway.version}</flyway-maven-plugin.version>
         <jetty-maven-plugin.version>9.4.11.v20180605</jetty-maven-plugin.version>
+        <jooq-maven-plugin.version>${jooq.version}</jooq-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -48,6 +51,11 @@
             <dependency>
                 <groupId>com.abbink.sws2</groupId>
                 <artifactId>sws2-persistence</artifactId>
+                <version>${sws2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.abbink.sws2</groupId>
+                <artifactId>sws2-persistence-schema</artifactId>
                 <version>${sws2.version}</version>
             </dependency>
             <dependency>
@@ -197,12 +205,12 @@
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
-                    <version>${flyway.version}</version>
+                    <version>${flyway-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jooq</groupId>
                     <artifactId>jooq-codegen-maven</artifactId>
-                    <version>${jooq.version}</version>
+                    <version>${jooq-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
