@@ -1,5 +1,6 @@
 package com.abbink.sws2.webapp.jersey.metrics;
 
+import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jersey2.InstrumentedResourceMethodApplicationListener;
 

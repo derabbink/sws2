@@ -1,13 +1,20 @@
 package com.abbink.sws2.webapp;
 
+import com.abbink.sws2.common.events.AppListener;
+import com.abbink.sws2.common.events.Bindings;
+import com.abbink.sws2.common.events.Bindings.AppListeners;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.jmx.JmxReporter;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
 import com.google.inject.servlet.GuiceServletContextListener;
+import org.flywaydb.core.Flyway;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class Sws2ServletContextListener extends GuiceServletContextListener {
@@ -30,8 +37,7 @@ public class Sws2ServletContextListener extends GuiceServletContextListener {
         servletContext = servletContextEvent.getServletContext();
         super.contextInitialized(servletContextEvent);
 
-        launchMetricsJmxReporter();
-//        launchMetricsConsoleReporter();
+        invokeAppStartListeners();
     }
 
     @Override
@@ -45,13 +51,13 @@ public class Sws2ServletContextListener extends GuiceServletContextListener {
         }
     }
 
-    private void launchMetricsJmxReporter() {
-        JmxReporter reporter = getInjectorInstance().getInstance(JmxReporter.class);
-        reporter.start();
-    }
-
-    private void launchMetricsConsoleReporter() {
-        ConsoleReporter reporter = getInjectorInstance().getInstance(ConsoleReporter.class);
-        reporter.start(1, TimeUnit.SECONDS);
+    private void invokeAppStartListeners() {
+        Injector injector = getInjectorInstance();
+        Set<AppListener> appListeners = injector.getInstance(
+            Key.get(new TypeLiteral<Set<AppListener>>(){}, AppListeners.class)
+        );
+        for (AppListener appListener : appListeners) {
+            appListener.appStarted();
+        }
     }
 }

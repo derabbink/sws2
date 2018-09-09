@@ -1,10 +1,9 @@
 package com.abbink.sws2.webapp.jersey;
 
 import com.abbink.sws2.common.di.JerseyModule;
-import com.abbink.sws2.common.jersey.JerseyObjects;
-import com.abbink.sws2.common.jersey.JerseyTypes;
+import com.abbink.sws2.common.jersey.Bindings.JerseyObjects;
+import com.abbink.sws2.common.jersey.Bindings.JerseyTypes;
 import com.abbink.sws2.webapp.Sws2ServletContextListener;
-import com.google.inject.Binding;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import com.google.inject.Key;

@@ -1,0 +1,171 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.abbink.sws2</groupId>
+        <artifactId>simple-web-stack-2</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>sws2-persistence</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Simple Web Stack 2 Persistence</name>
+
+    <properties>
+        <!-- default H2 schema: PUBLIC -->
+        <codegen.db.schema>PUBLIC</codegen.db.schema>
+        <codegen.flyway.migrations>classpath:com.abbink.sws2.persistence.schema</codegen.flyway.migrations>
+        <codegen.h2db.dir>${project.build.outputDirectory}/tmp</codegen.h2db.dir>
+        <codegen.h2db.file>codegen.h2.db</codegen.h2db.file>
+        <codegen.jdbc.driver>org.h2.Driver</codegen.jdbc.driver>
+        <codegen.jdbc.url>jdbc:h2:${codegen.h2db.dir}/${codegen.h2db.file}</codegen.jdbc.url>
+        <codegen.jooq.database>org.jooq.meta.h2.H2Database</codegen.jooq.database>
+        <codegen.jooq.output.package>com.abbink.sws2.persistence.generated.jooq</codegen.jooq.output.package>
+        <codegen.jooq.output.path>${basedir}/src/main/java</codegen.jooq.output.path>
+        <codegen.jooq.output.path_abs>${codegen.jooq.output.path}/com/abbink/sws2/persistence/generated/jooq</codegen.jooq.output.path_abs>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.abbink.sws2</groupId>
+            <artifactId>sws2-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.abbink.sws2</groupId>
+            <artifactId>sws2-persistence-schema</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>maven-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${codegen.h2db.dir}</directory>
+                                    <includes>
+                                        <include>${codegen.h2db.file}</include>
+                                    </includes>
+                                </fileset>
+                                <fileset>
+                                    <directory>${codegen.jooq.output.path_abs}</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>flyway-migrate</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+
+                        <configuration>
+                            <driver>${codegen.jdbc.driver}</driver>
+                            <url>${codegen.jdbc.url}</url>
+                            <schemas>
+                                <schema>${codegen.db.schema}</schema>
+                            </schemas>
+                            <locations>
+                                <location>${codegen.flyway.migrations}</location>
+                            </locations>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.abbink.sws2</groupId>
+                        <artifactId>sws2-persistence-schema</artifactId>
+                        <version>${sws2.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>jooq-codegen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+
+                        <configuration>
+                            <jdbc>
+                                <driver>${codegen.jdbc.driver}</driver>
+                                <url>${codegen.jdbc.url}</url>
+                            </jdbc>
+                            <generator>
+                                <database>
+                                    <name>${codegen.jooq.database}</name>
+                                    <inputSchema>${codegen.db.schema}</inputSchema>
+                                </database>
+                                <target>
+                                    <packageName>${codegen.jooq.output.package}</packageName>
+                                    <directory>${codegen.jooq.output.path}</directory>
+                                </target>
+                            </generator>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

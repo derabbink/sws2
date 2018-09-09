@@ -11,6 +11,8 @@
 
     <modules>
         <module>sws2-common</module>
+        <module>sws2-persistence</module>
+        <module>sws2-persistence-schema</module>
         <module>sws2-webapp</module>
         <module>sws2-web-api</module>
     </modules>
@@ -21,17 +23,24 @@
 
         <sws2.version>1.0-SNAPSHOT</sws2.version>
 
+        <flyway.version>5.1.4</flyway.version>
         <guice.version>4.2.0</guice.version>
         <!-- jersey 2.27 (even 2.26) depends on this beta version -->
         <hk2.version>2.5.0-b61</hk2.version>
+        <h2db.version>1.4.197</h2db.version>
         <jackson.version>2.9.6</jackson.version>
+        <javax-persistence.version>2.2</javax-persistence.version>
         <jersey.version>2.27</jersey.version>
+        <jooq.version>3.11.4</jooq.version>
         <junit.version>4.12</junit.version>
         <metrics.version>4.0.3</metrics.version>
         <servlet.version>4.0.1</servlet.version>
 
         <!-- plugins -->
+        <flyway-maven-plugin.version>${flyway.version}</flyway-maven-plugin.version>
         <jetty-maven-plugin.version>9.4.11.v20180605</jetty-maven-plugin.version>
+        <jooq-maven-plugin.version>${jooq.version}</jooq-maven-plugin.version>
+        <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -39,6 +48,16 @@
             <dependency>
                 <groupId>com.abbink.sws2</groupId>
                 <artifactId>sws2-common</artifactId>
+                <version>${sws2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.abbink.sws2</groupId>
+                <artifactId>sws2-persistence</artifactId>
+                <version>${sws2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.abbink.sws2</groupId>
+                <artifactId>sws2-persistence-schema</artifactId>
                 <version>${sws2.version}</version>
             </dependency>
             <dependency>
@@ -52,26 +71,6 @@
                 <version>${sws2.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-assistedinject</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-multibindings</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-servlet</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
@@ -93,6 +92,37 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-servlet</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2db.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <version>${javax-persistence.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-annotation</artifactId>
                 <version>${metrics.version}</version>
@@ -111,6 +141,11 @@
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jmx</artifactId>
                 <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
@@ -148,6 +183,16 @@
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-meta</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
@@ -161,4 +206,31 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>${jetty-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>${flyway-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jooq</groupId>
+                    <artifactId>jooq-codegen-maven</artifactId>
+                    <version>${jooq-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

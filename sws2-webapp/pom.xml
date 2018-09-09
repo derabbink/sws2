@@ -20,6 +20,10 @@
         </dependency>
         <dependency>
             <groupId>com.abbink.sws2</groupId>
+            <artifactId>sws2-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.abbink.sws2</groupId>
             <artifactId>sws2-web-api</artifactId>
         </dependency>
 
@@ -94,7 +98,6 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty-maven-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
