@@ -16,6 +16,10 @@
     <dependencies>
         <dependency>
             <groupId>com.abbink.sws2</groupId>
+            <artifactId>sws2-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.abbink.sws2</groupId>
             <artifactId>sws2-common</artifactId>
         </dependency>
         <dependency>

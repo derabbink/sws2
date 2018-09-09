@@ -19,6 +19,7 @@ public class Sws2Module extends AbstractModule {
 
     @Override
     protected void configure() {
+
         bind(ServletContext.class).toInstance(servletContext);
 
         // load application config
