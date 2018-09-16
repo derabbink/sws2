@@ -4,7 +4,7 @@
         <listener-class>com.abbink.sws2.webapp.Sws2ServletContextListener</listener-class>
     </listener>
     <!--<context-param>-->
-        <!--&lt;!&ndash; you can specify your config file here (2nd priority; after system property) &ndash;&gt;-->
+        <!-- you can specify your config file here (2nd priority; after system property) -->
         <!--<param-name>sws2ConfigFile</param-name>-->
         <!--<param-value>/some/path/to/your/config.yml</param-value>-->
     <!--</context-param>-->
