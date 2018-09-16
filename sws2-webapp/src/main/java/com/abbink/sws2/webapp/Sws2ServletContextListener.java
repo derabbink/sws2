@@ -1,21 +1,16 @@
 package com.abbink.sws2.webapp;
 
 import com.abbink.sws2.common.events.AppListener;
-import com.abbink.sws2.common.events.Bindings;
 import com.abbink.sws2.common.events.Bindings.AppListeners;
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.jmx.JmxReporter;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.servlet.GuiceServletContextListener;
-import org.flywaydb.core.Flyway;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 public class Sws2ServletContextListener extends GuiceServletContextListener {
     private static final Object INJECTOR_LOCK = new Object();

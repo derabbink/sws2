@@ -7,6 +7,7 @@ import com.abbink.sws2.webapp.config.ConfigModule;
 import com.abbink.sws2.webapp.jersey.JerseyPluginsModule;
 import com.abbink.sws2.webapp.metrics.MetricsModule;
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 
 import javax.servlet.ServletContext;
 
