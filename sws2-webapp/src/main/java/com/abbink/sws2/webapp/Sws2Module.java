@@ -7,6 +7,7 @@ import com.abbink.sws2.webapp.config.ConfigModule;
 import com.abbink.sws2.webapp.jersey.JerseyPluginsModule;
 import com.abbink.sws2.webapp.metrics.MetricsModule;
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 
 import javax.servlet.ServletContext;
 
@@ -19,7 +20,6 @@ public class Sws2Module extends AbstractModule {
 
     @Override
     protected void configure() {
-
         bind(ServletContext.class).toInstance(servletContext);
 
         // load application config

@@ -5,11 +5,18 @@ import com.abbink.sws2.common.config.persistence.Bindings.JdbcUri;
 import com.abbink.sws2.common.io.InputStreamProvider;
 import com.abbink.sws2.config.dto.ConfigDto;
 import com.abbink.sws2.config.dto.persistence.PersistenceConfigDto;
+import com.abbink.sws2.common.config.providers.ConfigBasedProvider;
+import com.abbink.sws2.config.providers.ConfigDtoProvider;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.throwingproviders.CheckedProvides;
 import com.google.inject.throwingproviders.ThrowingProviderBinder;
 
+import javax.annotation.Nullable;
+import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class ConfigModule extends AbstractModule {
@@ -18,59 +25,78 @@ public class ConfigModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        configureConfigFile();
-        configurePersistence();
-    }
-
-    private void configureConfigFile() {
-        requireBinding(ServletContext.class);
-
-        // use a partially prepared injector to access the servlet context, and use that to bind configuration stuff
-        ServletContext context = getProvider(ServletContext.class).get();
-        final String filePath = findConfigFilePath(context);
-        InputStreamProvider provider;
-        if (filePath != null) {
-            provider = () -> new FileInputStream(filePath);
-        } else {
-            // use default config file that is packaged with the application
-            provider = () -> context.getResourceAsStream(DEFAULT_CONFIG_FILE_NAME);
-        }
-        ThrowingProviderBinder.create(binder())
-            .bind(InputStreamProvider.class, InputStream.class)
-            .annotatedWith(ConfigFile.class)
-            .to(provider);
-
+        install(new ConfigDependencyModule());
         install(new com.abbink.sws2.config.ConfigModule());
+        install(new PersistenceConfigDependencyModule());
     }
 
-    private String findConfigFilePath(ServletContext context) {
-        String filePath = null;
-        try {
-            filePath = System.getProperty(CONFIG_FILE_OPTION);
-        } catch (SecurityException e) {}
-        if (filePath != null) {
-            return filePath;
+    public static class ConfigDependencyModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            requireBinding(ServletContext.class);
+
+            // create & install a module that uses the @CheckedProvides methods
+            install(ThrowingProviderBinder.forModule(this));
         }
 
-        filePath = context.getInitParameter(CONFIG_FILE_OPTION);
-        if (filePath != null) {
-            return filePath;
+        @Provides
+        @ConfigFile
+        @Singleton
+        public String provideConfigFilePath(ServletContext context) {
+            String filePath = null;
+            try {
+                filePath = System.getProperty(CONFIG_FILE_OPTION);
+            } catch (SecurityException e) {}
+            if (filePath != null) {
+                return filePath;
+            }
+
+            filePath = context.getInitParameter(CONFIG_FILE_OPTION);
+            if (filePath != null) {
+                return filePath;
+            }
+            return null;
         }
-        return null;
+
+        @CheckedProvides(InputStreamProvider.class)
+        @ConfigFile
+        public InputStream provideInputStream(
+            @ConfigFile @Nullable String configFilePath,
+            ServletContext servletContext
+        ) throws IOException {
+            if (configFilePath != null) {
+                return new FileInputStream(configFilePath);
+            } else {
+                // use default config file that is packaged with the application
+                return servletContext.getResourceAsStream(DEFAULT_CONFIG_FILE_NAME);
+            }
+        }
+
     }
 
-    private void configurePersistence() {
-        requireBinding(ConfigDto.class);
-        // use a partially prepared injector to access the config file, and use that to decide how to bind persistence
-        ConfigDto config = getProvider(ConfigDto.class).get();
+    public static class PersistenceConfigDependencyModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            requireBinding(ConfigDtoProvider.class);
 
-        if (config.getPersistence().getType() == PersistenceConfigDto.Type.JDBC) {
-            configureJdbcPersistence(config);
+            // create & install a module that uses the @CheckedProvides methods
+            install(ThrowingProviderBinder.forModule(this));
         }
-    }
 
-    private void configureJdbcPersistence(ConfigDto config) {
-        String jdbcUri = config.getPersistence().getJdbc().getJdbcUri();
-        bind(String.class).annotatedWith(JdbcUri.class).toInstance(jdbcUri);
+        @CheckedProvides(ConfigBasedProvider.class)
+        @Singleton
+        @JdbcUri
+        private String provideJdbcUri(ConfigDtoProvider configDtoProvider) throws ConfigBasedProvider.Exception {
+            ConfigDto config;
+            try {
+                config = configDtoProvider.get();
+            } catch (IOException e) {
+                throw new ConfigBasedProvider.Exception(e);
+            }
+            if (config.getPersistence().getType() != PersistenceConfigDto.Type.JDBC) {
+                throw new ConfigBasedProvider.Exception("Persistence not configured for JDBC");
+            }
+            return config.getPersistence().getJdbc().getJdbcUri();
+        }
     }
 }

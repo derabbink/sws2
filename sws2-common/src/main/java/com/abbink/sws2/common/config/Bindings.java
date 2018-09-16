@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -19,7 +20,7 @@ public class Bindings {
      * describe a config file URI
      */
     @BindingAnnotation
-    @Target({PARAMETER}) @Retention(RUNTIME)
+    @Target({METHOD, PARAMETER}) @Retention(RUNTIME)
     public @interface ConfigFile {
     }
 }
